@@ -9,7 +9,7 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-const PORT = process.env.PORT || 8081;
+const PORT = process.env.PORT || 8070;
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
@@ -32,15 +32,21 @@ mongoose.connection.once('open', () => {
     console.log('######################################################');
 });
 
-app.route('/').get((req, res) => {
-    res.send('SPM Group Project');
-});
+// app.route('/').get((req, res) => {
+//     res.send('SPM Group Project');
+// });
 
 
-if(process.env.NODE_ENV === 'production'){
+// if(process.env.NODE_ENV === 'production'){
 
-    app.use(express.static('FrontEnd/build'))
-}
+//     app.use(express.static('FrontEnd/build'))
+// }
+
+app.get('/', function(req, res){
+    res.send('hello world');
+  });
+const userRouter = require("./Routes/user");
+app.use("/user",userRouter);
 
 
 app.listen(PORT, () => {
