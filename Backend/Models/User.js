@@ -21,6 +21,10 @@ const userSchema = new Schema({
         type : String,
         required :true
       },
+      assign_lead : {
+        type : String,
+        required :false
+      },
       dept : {
         type : String,
         required :true
