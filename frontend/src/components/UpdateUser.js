@@ -1,5 +1,7 @@
-import React, {Component} from "react";
-import axios from "axios";
+import React, { Component} from 'react';
+import axios from 'axios';
+import { useHistory, useParams } from 'react-router-dom';
+
 const initialState = {
     name: '',
     email: '',
@@ -9,12 +11,11 @@ const initialState = {
     dept: '',
     pwd: '',
     selectOptions : [],
-    show_lead : true
 }
-
-
-
-class addUser extends Component {
+function withParams(Component) {
+    return props => <Component {...props} params={useParams()} />;
+  }
+class updateStudent extends Component {
     constructor(props) {
         super(props);
         this.onChange = this.onChange.bind(this);
@@ -31,27 +32,31 @@ class addUser extends Component {
     
       }
 
-      componentDidMount(){
-        this.getOptions()
+    componentDidMount() {
+        this.getOptions();
+        let { id } = this.props.params;
+        console.log(id);
+        axios.get('http://localhost:8070/user/get/'+id)
+            .then(response => {
+               
+                this.setState({ name: response.data[0].name, email: response.data[0].email, dob: response.data[0].dob,
+                    role: response.data[0].role, assign_lead: response.data[0].assign_lead,
+                    dept: response.data[0].dept, pwd: response.data[0].pwd })
+                    
+            })
+            .catch(error => {
+                alert(error.message)
+            })
+
     }
 
     onChange(e) {
-       this.setState({ [e.target.name]: e.target.value })
-       if(e.target.name == 'role'){
-           if(e.target.value == 'Agent'){
-            this.setState({show_lead: false})
-           }
-
-           else{
-            this.setState({show_lead: true})
-        }
-           
-       }
+        this.setState({ [e.target.name]: e.target.value })
     }
 
 
+
     onSubmit(e) {
-        // this.setState({name: 'fbv'})
         e.preventDefault();
         let user = {
             name: this.state.name,
@@ -61,32 +66,24 @@ class addUser extends Component {
             assign_lead: this.state.assign_lead,
             dept: this.state.dept,
             pwd: this.state.pwd,
+
         };
-        console.log('DATA TO SEND', user)
-        
-        axios.post('http://localhost:8070/user/add', user)
+        let { id } = this.props.params;
+        axios.put('http://localhost:8070/user/update/'+id, user)
             .then(response => {
-                alert('User Data successfully Recorded to the Systems')
-                
+                alert('Event Data successfully Updated')
             })
             .catch(error => {
                 console.log(error.message);
                 alert(error.message)
             })
-            
-            
     }
-
-
     render() {
-
- 
-
+  
         return (
-
             <div>
             <br></br>
-            <h4>Add Users</h4><br></br>
+            <h4>Update Users</h4><br></br>
            
             <div class="container" style={{width:"60%"}}>
             <form onSubmit={this.onSubmit}data-testid ="form-tag" className="container">
@@ -94,7 +91,7 @@ class addUser extends Component {
              <div class="mb-3">
                  <label for="name" class="form-label">Name</label>
                  <input type="text" class="form-control"  name="name"aria-describedby="emailHelp"
-                 defaultValue={this.state.name}
+                value={this.state.name}
                  onChange={this.onChange}/>
              </div>
  
@@ -114,29 +111,27 @@ class addUser extends Component {
  
              <div class="mb-3" style={{marginTop: "30px" }}>
                  <label for="role" class="form-label">Role</label>
-                 <select style={{marginLeft: "95px", width:"250px" }}  name="role" class="custom-select custom-select-sm" defaultValue={this.state.role} onChange={this.onChange}> 
+                 <select style={{marginLeft: "95px", width:"250px" }}  name="role" class="custom-select custom-select-sm" value={this.state.role} onChange={this.onChange}> 
                      <option selected>Select Role</option>
                      <option value="Manager">Manager</option>
                      <option value="Lead">Team Lead</option>
                      <option value="Agent">Agent</option>
                   </select>
              </div>
-            {this.state.show_lead ? true : 
-         <div class="mb-3" style={{marginTop: "30px" }}>
-         <label for="assign_lead" class="form-label">Assign Lead</label>
-         <select style={{marginLeft: "40px", width:"250px" }} name="assign_lead"  class="custom-select custom-select-sm" defaultValue={this.state.assign_lead} onChange={this.onChange}>  
-          {this.state.selectOptions.map(data=>(
-           <option value = {data.name}>{data.name}</option>  
-          ))}
-            
-          </select>
-     </div>
-
-        }
-            
+ 
+             <div class="mb-3" style={{marginTop: "30px" }}>
+                 <label for="assign_lead" class="form-label">Assign Lead</label>
+                 <select style={{marginLeft: "40px", width:"250px" }} name="assign_lead"  class="custom-select custom-select-sm" value={this.state.assign_lead} onChange={this.onChange}>  
+                  {this.state.selectOptions.map(data=>(
+                   <option value = {data.name}>{data.name}</option>  
+                  ))}
+                    
+                  </select>
+             </div>
+ 
              <div class="mb-3" style={{marginTop: "25px"}}>
                  <label for="dept" class="form-label">Department</label>
-                 <select style={{marginLeft: "40px", width:"250px" }} name="dept" class="custom-select custom-select-sm" defaultValue={this.state.dept} onChange={this.onChange}> 
+                 <select style={{marginLeft: "40px", width:"250px" }} name="dept" class="custom-select custom-select-sm" value={this.state.dept} onChange={this.onChange}> 
                      <option selected>Select Department</option>
                      <option value="DEP01">DEP01</option>
                      <option value="DEP02">DEP02</option>
@@ -152,7 +147,7 @@ class addUser extends Component {
                   onChange={this.onChange}/>
              </div>
              
-             <button type="submit" class="btn btn-primary">Submit</button>  
+             <button type="submit" class="btn btn-primary">Update</button>  
  
          </form>
  
@@ -160,11 +155,10 @@ class addUser extends Component {
              </div>
              </div>
 
-        )}
-
+        )
+    }
 
 
 }
+export default withParams(updateStudent);
 
-
-export default  addUser;

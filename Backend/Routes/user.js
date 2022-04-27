@@ -70,7 +70,7 @@ router.route("/get_Lead").get((req,res)=>{
 
 router.route("/update/:id").put(async(req,res)=>{
     let userId = req.params.id;
-    const {name,email,dob,role,assign_lead,dept}=req.body;
+    const {name,email,dob,role,assign_lead,dept,pwd}=req.body;
 
     const updateuser = {
         name,
@@ -78,7 +78,8 @@ router.route("/update/:id").put(async(req,res)=>{
         dob,
         role,
         assign_lead,
-        dept
+        dept,
+        pwd
     } 
 
     const update = await User.findByIdAndUpdate(userId,updateuser).then(()=>{
@@ -110,12 +111,11 @@ router.route("/get/:id").get(async(req,res)=>{
 
     let userId = req.params.id;
 
-   const user =  await User.findById(userId).then(()=>{
-        res.status(200).send({status:"User deleted"})
+    User.find({_id: userId}).then((user)=>{
+        res.json(user)
     }).catch((err)=>{
-        console.log(err.message);
-        res.status(500).send({status:"Error with get user",error: err.message}); 
-    })
+        console.log(err);
+    }) 
 })
 
 
