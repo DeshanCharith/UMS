@@ -9,6 +9,7 @@ router.route("/add").post((req,res)=>{
     const role = req.body.role;
     const assign_lead = req.body.assign_lead;
     const dept = req.body.dept;
+    const pwd = req.body.pwd;
 
     const newUser = new User({
         name,
@@ -16,7 +17,8 @@ router.route("/add").post((req,res)=>{
         dob,
         role,
         assign_lead,
-        dept
+        dept,
+        pwd
     })
     
     newUser.save().then(()=>{

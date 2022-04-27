@@ -28,6 +28,10 @@ const userSchema = new Schema({
       dept : {
         type : String,
         required :true
+      },
+      pwd : {
+        type : String,
+        required :true
       }
 })
 

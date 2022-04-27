@@ -7,6 +7,7 @@ const initialState = {
     role: '',
     assign_lead: '',
     dept: '',
+    pwd: '',
     selectOptions : [],
 }
 
@@ -43,11 +44,11 @@ class addUser extends Component {
         let student = {
             name: this.state.name,
             email: this.state.email,
-            NIC: this.state.NIC,
             dob: this.state.dob,
             role: this.state.role,
             assign_lead: this.state.assign_lead,
             dept: this.state.dept,
+            pwd: this.state.pwd,
         };
         console.log('DATA TO SEND', student)
         axios.post('http://localhost:8070/user/add', student)
@@ -74,9 +75,6 @@ class addUser extends Component {
             <div class="container" style={{width:"60%"}}>
             <form onSubmit={this.onSubmit}data-testid ="form-tag" className="container">
  
-
-
-
              <div class="mb-3">
                  <label for="name" class="form-label">Name</label>
                  <input type="text" class="form-control"  name="name"aria-describedby="emailHelp"
@@ -129,11 +127,12 @@ class addUser extends Component {
                   </select>
              </div>
              
-             {/* <div class="mb-3">
+             <div class="mb-3">
                  <label for="pwd" class="form-label">Password</label>
-                 <input type="password" class="form-control" id="pwd"
-                 onChange={(e)=> { setPwd(e.target.value);}}/>
-             </div> */}
+                 <input type="password" class="form-control" name="pwd"
+                  defaultValue={this.state.pwd}
+                  onChange={this.onChange}/>
+             </div>
              
              <button type="submit" class="btn btn-primary">Submit</button>  
  
