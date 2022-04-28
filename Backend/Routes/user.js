@@ -2,6 +2,20 @@
 const router = require('express').Router();
 let User = require("../Models/User");
 
+router.route("/login").post((req,res)=>{
+   
+    const email = req.body.email;
+    const pwd = req.body.pwd;
+
+  
+    User.find({email: email,pwd:pwd}).then((user)=>{
+        res.json(user)
+    }).catch((err)=>{
+        console.log(err);
+    })
+})
+
+
 router.route("/add").post((req,res)=>{
     const name = req.body.name;
     const email = req.body.email;
@@ -120,7 +134,37 @@ router.route("/get/:id").get(async(req,res)=>{
 
 
 
+router.route("/bulk").post((req,res)=>{
 
+    req.body.forEach(element => {
+        console.log(element);
+      
+
+    const name = element.Name;
+    const email = element.Email;
+    const dob = element.Dob;
+    const role = element.Role;
+    //const assign_lead = element.assign_lead;
+    const dept = element.Department;
+    const pwd = element.Password;
+
+    const newUser = new User({
+        name,
+        email,
+        dob,
+        role,
+       // assign_lead,
+        dept,
+        pwd
+    })
+    
+    newUser.save().then(()=>{
+        res.json("User added");
+    }).catch((err)=>{
+        console.log(err);
+    })
+});
+})
 
 
 

@@ -1,82 +1,93 @@
-import React, {Component}from "react";
+import React, { useState } from "react";
 import axios from "axios";
-const initialState = {
-    
-    selectOptions : [],
-    DisplayData : '',
+import * as XLSX from "xlsx";
+
+function App() {
+  const [items, setItems] = useState([]);
+
+  const readExcel = (file) => {
+    const promise = new Promise((resolve, reject) => {
+      const fileReader = new FileReader();
+      fileReader.readAsArrayBuffer(file);
+
+      fileReader.onload = (e) => {
+        const bufferArray = e.target.result;
+
+        const wb = XLSX.read(bufferArray, { type: "buffer" });
+
+        const wsname = wb.SheetNames[0];
+
+        const ws = wb.Sheets[wsname];
+
+        const data = XLSX.utils.sheet_to_json(ws);
+
+        resolve(data);
+      };
+
+      fileReader.onerror = (error) => {
+        reject(error);
+      };
+    });
+
+    promise.then((d) => {
+      setItems(d);
+      console.log(d);
+      axios.post('http://localhost:8070/user/bulk', d)
+      .then(response => {
+          alert('User data bulk successfully Uploaded')
+          
+      })
+      .catch(error => {
+          console.log(error.message);
+          alert(error.message)
+      })
+    });
+  };
+
+  return (
+    <div class="container">
+        <br></br>
+        <div class="table container">
+      <input
+        type="file"
+        onChange={(e) => {
+          const file = e.target.files[0];
+          readExcel(file);
+        }}
+      />  
+        <button type="submit" style={{marginLeft: "25px"}} class="btn btn-primary">Submit</button>  
+      </div>
+  <br></br>
+  <div   style={{overflowY:"scroll",height:"70vh"}}>
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Email</th>
+            <th scope="col">Dob</th>
+            <th scope="col">Role</th>
+            <th scope="col">Department</th>
+            <th scope="col">Password</th>
+          </tr>
+        </thead>
+        <tbody>
+          {items.map((d) => (
+            <tr key={d.Item}>
+              <th>{d.Name}</th>
+              <td>{d.Email}</td>
+              <th>{d.Dob}</th>
+              <td>{d.Role}</td>
+              <th>{d.Department}</th>
+              <td>{d.Password}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      
+      </div>
+      <hr></hr>
+    </div>
+  );
 }
 
-class ImportUser extends Component {
-    constructor(props) {
-        super(props);
-        
-        this.state = initialState;
-
-    }
-
-
-    async getOptions(){
-        const res = await axios.get('http://localhost:8070/user/')
-        const data = res.data
-
-        this.setState({selectOptions: data})
-    
-      }
-
-      componentDidMount(){
-        this.getOptions();
-    }
-  
-
-    render() {
-
-
-        console.log(this.state.DisplayData);
-        return(
-<div>
-<br></br>
-<div class="" style={{width:"100%"}}>
-<h4>Import Bulk Users</h4><br></br>
-
-<div class="mb-3" style={{width:"30%", float:"righ"}}>
-  <label for="formFileSm" class="form-label">Import excel file</label>
-  <input class="form-control form-control-sm" id="formFileSm" type="file"/> 
-</div>
-
-<table class="table">
-<thead>
-   <tr>
-   
-   <th scope="col">Name</th>
-   <th scope="col">Email</th>
-   <th scope="col">DOB</th>
-   <th scope="col">Role</th>
-   <th scope="col">Assign Lead</th>
-   <th scope="col">Dept</th>
-   </tr>
-</thead>
-<tbody>
-                 
-                    
-{this.state.selectOptions.map(data=>(
-    <tr>
-                   <td><input name = {data.name} defaultValue={data.name}></input> </td>
-                   <td><input name = {data.email} defaultValue={data.email}></input> </td>
-                   <td><input name = {data.dob} defaultValue={data.dob}></input> </td>
-                   <td><input name = {data.role} defaultValue={data.role}></input> </td>
-                   <td><input name = {data.assign_lead} defaultValue={data.assign_lead}></input> </td>
-                   <td><input name = {data.dept} defaultValue={data.dept}></input> </td>
- </tr>
-                  )) }
-                    
-                </tbody>
-</table>
-</div>
-</div>
-        )
-
-    }
-}
-
-
-export default  ImportUser;
+export default App;

@@ -4,7 +4,7 @@ import {Link} from "react-router-dom";
 
 const initialState = {
     
-    selectOptions : [],
+    Allusers : [],
     DisplayData : '',
 }
 
@@ -17,20 +17,35 @@ class allUser extends Component {
     }
 
 
-    async getOptions(){
-        const res = await axios.get('http://localhost:8070/user/')
-        const data = res.data
+    async getAllusers(){
+        const role_value = localStorage.getItem('role_value');
+        const id_value = localStorage.getItem('id_value');
+        if(role_value =="Manager"){
+            const res = await axios.get('http://localhost:8070/user/')
+            const data = res.data
+            this.setState({Allusers: data})
+        }
 
-        this.setState({selectOptions: data})
+        else if(role_value =="Lead"){
+            const res = await axios.get('http://localhost:8070/user/get_Agent__by_lead/'+ id_value);
+            const data = res.data
+            this.setState({Allusers: data})
+        }
+       
+
+      
+
     
       }
 
       componentDidMount(){
-        this.getOptions();
+        this.getAllusers();
+       
     }
   
 
     delete_user(e){
+       
         const value1 = e.currentTarget.getAttribute("data-value1")
 
 
@@ -51,7 +66,7 @@ class allUser extends Component {
         console.log(this.state.DisplayData);
         return(
 <div>
-
+<div style={{overflowY:"scroll",height:"80vh"}}>
 <table class="table">
 <thead>
    <tr>
@@ -67,7 +82,7 @@ class allUser extends Component {
 <tbody>
                  
                     
-{this.state.selectOptions.map(data=>(
+{this.state.Allusers.map(data=>(
     <tr>
                    <td>{data.name} </td>
                    <td> {data.email} </td>
@@ -77,8 +92,7 @@ class allUser extends Component {
                    <td> {data.dept} </td>
                    <td>
                    <Link to={`/update/${data._id}`}>
-                       <button data-id={data._id} data-name={data.name} data-email={data.email} data-dob={data.dob}
-                   data-role={data.role}  data-assign_lead={data.assign_lead} data-dept={data.dept} type="button" class="btn btn-warning btn-sm">Edit</button>
+                       <button type="button" class="btn btn-warning btn-sm">Edit</button>
                    </Link>
                    
                     <button style={{marginLeft:"5px"}} onClick={this.delete_user} data-value1={data._id} type="button" class="btn btn-danger btn-sm">Delete</button> </td>
@@ -88,6 +102,9 @@ class allUser extends Component {
                 </tbody>
 </table>
 </div>
+<hr style={{color:"black"}} ></hr>
+</div>
+
 
         )
 

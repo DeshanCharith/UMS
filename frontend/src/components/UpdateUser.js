@@ -1,6 +1,6 @@
 import React, { Component} from 'react';
 import axios from 'axios';
-import { useHistory, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 const initialState = {
     name: '',
@@ -83,7 +83,7 @@ class updateStudent extends Component {
         return (
             <div>
             <br></br>
-            <h4>Update Users</h4><br></br>
+            <h4  style={{marginLeft:"20px"}}>Update Users</h4><br></br>
            
             <div class="container" style={{width:"60%"}}>
             <form onSubmit={this.onSubmit}data-testid ="form-tag" className="container">
